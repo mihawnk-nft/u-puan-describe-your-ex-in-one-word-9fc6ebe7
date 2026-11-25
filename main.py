@@ -41,7 +41,14 @@ def main() -> int:
         os.makedirs(out_dir, exist_ok=True)
     with open(OUTPUT_PATH, "w", encoding="utf-8", newline="\n") as fh:
         fh.write(word)
-    print(f"wrote {OUTPUT_PATH}: {word!r} ({len(word)} chars)")
+
+    # Read-back verification: the gate scores exactly what is on disk,
+    # so confirm the file we wrote is the word we meant, byte for byte.
+    with open(OUTPUT_PATH, "r", encoding="utf-8", newline="") as fh:
+        written = fh.read()
+    assert written == word, f"read-back mismatch: {written!r} != {word!r}"
+    assert 1 <= len(written) <= 111, "written word must be 1-111 characters"
+    print(f"wrote {OUTPUT_PATH}: {word!r} ({len(word)} chars, verified)")
     return 0
 
 
